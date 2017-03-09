@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 public class client {
 	
@@ -84,14 +85,35 @@ public class client {
     	 DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
     	BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     	String sentence = inFromUser.readLine(); 
-    	outToServer.writeBytes(sentence + "\n"+ "Host :80" +"\r\n\r\n");
-    	String modifiedSentence;
+    	outToServer.writeBytes(sentence + "\r\n"+ "Host: www.google.com:80" +"\r\n\r\n");
+    	String modifiedSentence = inFromServer.readLine();
+    	int code = getCode(modifiedSentence);
+    	System.out.println(code);
+    	handle(code);
     	while ((modifiedSentence = inFromServer.readLine()) != null) {
-    		modifiedSentence = inFromServer.readLine();
     		System.out.println("FROM SERVER: " + modifiedSentence); 
+    		if (modifiedSentence.contains("HREF=")) {
+    			System.out.println("contains HREF");
+    			String newLocation = modifiedSentence.substring(9, modifiedSentence.length()-11);
+    			System.out.println(newLocation);
+    			DataOutputStream outToServer2 = new DataOutputStream(clientSocket.getOutputStream());
+    			BufferedReader inFromServer2 = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+    			outToServer2.writeBytes("GET " + newLocation+ " HTTP/1.1" + "\r\n"+ "Host: www.google.com:80" +"\r\n\r\n");
+    			String serverResponse;
+    	    	while ((serverResponse = inFromServer2.readLine()) != null) {
+    	    		System.out.println("FROM SERVER: "+ serverResponse);
+    	    	}
+    		}
     	}
-    	 clientSocket.close();
+//    	 clientSocket.close();
 	}
-
+	
+	private static void handle(int code) {
+		// TODO Auto-generated method stub
+		
+	}
+	private static int getCode(String firstResponse) {
+		return Integer.parseInt(firstResponse.substring(9, 12));
+	}
 	
 }
