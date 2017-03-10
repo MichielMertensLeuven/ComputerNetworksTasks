@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+//http://www.tcpipguide.com/
 
 public class Client {
 	
@@ -119,8 +120,10 @@ public class Client {
 			System.out.println("Redirecting to the right page");
 			String location = getLocation(inFromServer);
 			System.out.println(inFromServer.readLine());
+			URL locationUri = new URL(location);
+			String newHost = locationUri.getHost();
 			resetSocket(host, port);
-			get(new URL(location), host, port);
+			get(locationUri, newHost, port);
 		}
 		else {
 			System.out.println("Unknown code: "+ code);
@@ -153,6 +156,7 @@ public class Client {
 		while ((line = buffer.readLine()) != null) {
 			System.out.println("FROM SERVER: " + line);
 		}
+		System.out.println("done!");
 	}
 	
 }
